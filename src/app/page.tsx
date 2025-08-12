@@ -33,6 +33,7 @@ const formSchema = z.object({
 });
 
 const user = Duser;
+const avar = "https://i.pinimg.com/736x/4a/f9/9e/4af99e91df503cdc1372a6962925cec4.jpg";
 
 const featureHomes = [
   {
@@ -76,7 +77,7 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       
-      <WelcomeTheme userName={user.name} backgroundUrl={user.avar} />
+      <WelcomeTheme userName={user.name} backgroundUrl={avar} />
       
       {/* header */}
       {/* <div className="relative bg-[url('https://i.pinimg.com/736x/64/f7/8d/64f78daedff642c605dc3bab2604e832.jpg')] bg-cover bg-center h-[550px] mt-[60px] px-5 text-center flex flex-col justify-center text-white">

@@ -16,24 +16,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { ILocationItem } from "@/app/types";
-
-
+import { ILocation } from "@/app/model/location";
 
 const SortForm = ({
-    Location,
-    className
-    }: {
-    Location: ILocationItem[];
-    className? : string;
+  Location,
+  className,
+}: {
+  Location: ILocation[];
+  className?: string;
 }) => {
   const params = useSearchParams();
-  console.log(params);
+  const pathname = usePathname();
   const [openLocation, setOpenLocation] = React.useState(false);
-  const [searchLocation, setSearchLocation] = React.useState(params.get("location") ?? "");
+  const [searchLocation, setSearchLocation] = React.useState(
+    params.get("location") ?? ""
+  );
   const router = useRouter();
   const formSchema = z
     .object({
@@ -42,8 +42,7 @@ const SortForm = ({
           message: "Where are you going?",
         })
         .refine(
-          (value) =>
-            Location.some((item: ILocationItem) => item.locationName === value),
+          (value) => Location.some((item: ILocation) => item.name === value),
           {
             message: "Selected location is not valid.",
           }
@@ -56,11 +55,23 @@ const SortForm = ({
         if (data.check_in && data.check_out) {
           return new Date(data.check_out) > new Date(data.check_in);
         }
-        return true; // If one of them is undefined, skip this validation
+        return true;
       },
       {
         message: "Check-out must be after check-in",
-        path: ["check_out"], // Assign error to check_out field
+        path: ["check_out"],
+      }
+    )
+    .refine(
+      (data) => {
+        if (data.check_in) {
+          return new Date(data.check_in) >= new Date();
+        }
+        return true;
+      },
+      {
+        message: "Check-in must be after today",
+        path: ["check_in"],
       }
     );
 
@@ -73,14 +84,26 @@ const SortForm = ({
     },
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    router.push(
-      `/stays/search?location=${encodeURIComponent(
-        values.location
-      )}&check_in=${encodeURIComponent(
-        values.check_in || ""
-      )}&check_out=${encodeURIComponent(values.check_out || "")}`
-    );
+    if (
+      pathname.includes("result") &&
+      values.location === params.get("location")
+    ) {
+      router.push(
+        `${pathname}?location=${encodeURIComponent(
+          values.location
+        )}&check_in=${encodeURIComponent(
+          values.check_in || ""
+        )}&check_out=${encodeURIComponent(values.check_out || "")}`
+      );
+    } else {
+      router.push(
+        `/stays/search?location=${encodeURIComponent(
+          values.location
+        )}&check_in=${encodeURIComponent(
+          values.check_in || ""
+        )}&check_out=${encodeURIComponent(values.check_out || "")}`
+      );
+    }
   }
 
   const handleOpen = () => {
@@ -95,13 +118,15 @@ const SortForm = ({
       setOpenLocation(false);
     }
   };
-  const removeAccents = (str:string) => {
-  
+  const removeAccents = (str: string | undefined | null): string => {
+    if (typeof str !== "string") {
+      return "";
+    }
     return str
-    .normalize('NFD')                           
-    .replace(/[\u0300-\u036f]/g, '')            
-    .replace(/đ/g, 'd')                         
-    .replace(/Đ/g, 'D'); 
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
   };
 
   useEffect(() => {
@@ -110,22 +135,24 @@ const SortForm = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  const [filteredLocations, setFilteredLocations] = useState<ILocationItem[]>(
-    []
-  );
+  const [filteredLocations, setFilteredLocations] = useState<ILocation[]>([]);
   const filterLocation = (location: string) => {
     return Location.filter((item) =>
-      removeAccents(item.locationName).toLowerCase().includes(location.toLowerCase())
+      removeAccents(item.name).toLowerCase().includes(location.toLowerCase())
     );
   };
 
   useEffect(() => {
     setFilteredLocations(filterLocation(searchLocation));
-    console.log(filteredLocations);
   }, [searchLocation]);
 
   return (
-    <div className={cn(`flex justify-center  w-full absolute  left-0 right-0 mx-auto bg-gray-200 rounded-lg p-10 shadow-xl z-10 max-w-5xl`, className)}>
+    <div
+      className={cn(
+        `flex justify-center  w-full absolute  left-0 right-0 mx-auto bg-gray-200 rounded-lg p-10 shadow-xl z-10 max-w-5xl`,
+        className
+      )}
+    >
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -166,18 +193,18 @@ const SortForm = ({
                               className="flex gap-5 items-center p-3 hover:bg-gray-100 cursor-pointer"
                               key={index}
                               onClick={() => {
-                                setSearchLocation(item.locationName);
-                                field.onChange(item.locationName);
+                                setSearchLocation(item.name);
+                                field.onChange(item.name);
                                 setOpenLocation(false);
                               }}
                             >
                               <IoLocationSharp className="ml-2 text-xl primary_text" />
                               <div className="ml-3 flex flex-col items-start">
                                 <h2 className="text-md font-medium text-gray-700">
-                                  {item.locationName}
+                                  {item.name}
                                 </h2>
                                 <p className="text-sm text-gray-500">
-                                  {item.locationAddress}
+                                  {item.address}
                                 </p>
                               </div>
                             </div>
@@ -237,13 +264,13 @@ const SortForm = ({
               </FormItem>
             )}
           />
-          
+
           {/* Search Button */}
           <Button
-            className="primary_bg hover:bg-[#3e2b2b] text-white px-4 py-2 rounded-lg"
+            className="primary_bg hover:bg-[#632828] text-white px-8 py-2 rounded-lg"
             type="submit"
           >
-            Search
+            Check ! 
           </Button>
         </form>
       </Form>

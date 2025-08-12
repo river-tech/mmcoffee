@@ -4,22 +4,38 @@ import FilterForm from "@/component/FilterForm";
 import SortForm from "@/component/SortForm";
 import RenderStar from "@/components/renderStar";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React from "react";
 import { FaMapPin } from "react-icons/fa6";
 import RoomBooking from "./RoomBookingItem";
+import { IHotel } from "@/app/model/Hotel";
 
-const page = async ({
+const page = ({
   params,
 }: {
   params: {
     hotelId: string;
   };
 }) => {
-  const idhotel =  params.hotelId
+  const idhotel = params.hotelId;
   const Hotel = DHotel;
   const location = DLocation;
-  const HotelItem = Hotel.find((item) => item.id.toString() === idhotel);
-  console.log(params.hotelId);
+  
+  
+  // Tìm khách sạn dựa trên hotelId
+  
+  const HotelItem = Hotel.find(
+    (item) => item.id.toString() === idhotel
+  ) as IHotel;
+
+  if (!HotelItem) {
+    return (
+      <div className="h-screen w-full bg-[#d4cece] flex justify-center items-center">
+        <h1 className="text-xl text-red-500">
+          Khách sạn không tồn tại hoặc đã bị xóa.
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <div className="h-fit w-full bg-[#d4cece]">
@@ -28,7 +44,7 @@ const page = async ({
         <FilterForm />
         <div className="w-[80%]">
           <div className="flex flex-col gap-2">
-            <h1 className="text-xl font-bold hover:text-[#3b3131]">
+            <h1 className="text-3xl font-bold hover:text-[#3b3131]">
               {HotelItem?.name}
             </h1>
             <p className="flex gap-2 ml-2">
@@ -37,26 +53,35 @@ const page = async ({
             <p className="flex gap-2 items-center">
               <FaMapPin className="text-red-700" />
               <Link
-                className="hover:text-[#aa2a2a]"
-                href={"https://maps.app.goo.gl/KYw7P8aEv8WStxmV7"}
+                className="hover:text-[#aa2a2a] hover:underline"
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  HotelItem?.address || ""
+                )}`}
+                rel="noopener noreferrer"
+                target="_blank"
               >
                 {HotelItem?.address}
               </Link>
             </p>
-            <div className="grid grid-cols-3">
+
+            {/* Hiển thị ảnh khách sạn */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               {HotelItem?.image &&
                 HotelItem.image.map((item, index) => (
                   <div key={index} className="relative h-52 w-full mb-5">
                     <img
                       src={item}
                       alt={HotelItem.name}
-                      className="rounded-md"
+                      className="rounded-md object-cover w-full h-full"
                     />
                   </div>
                 ))}
             </div>
           </div>
-          {HotelItem && <RoomBooking HotelItem={HotelItem} />}
+          {/* Hiển thị phần phòng */}
+          <div className="mt-5">
+            <RoomBooking HotelItem={HotelItem} />
+          </div>
         </div>
       </div>
     </div>

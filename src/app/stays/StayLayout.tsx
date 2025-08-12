@@ -3,8 +3,9 @@
 import Footer from "@/component/Footer";
 import React from "react";
 import { IoLocationSharp } from "react-icons/io5";
-import { IFeaturedHotels, ILocationItem } from "../types/index.d";
 import SortForm from "@/component/SortForm";
+import { ILocation } from "../model/location";
+import { IfeaturedHotels } from "../model/Hotel";
 
 
 
@@ -12,8 +13,8 @@ const StayLayout = ({
   Location,
   FeaturedHotels,
 }: {
-  Location: ILocationItem[];
-  FeaturedHotels: IFeaturedHotels[];
+  Location: ILocation[];
+  FeaturedHotels: IfeaturedHotels[];
 }) => {
   
   return (
@@ -94,15 +95,15 @@ const StayLayout = ({
                 <div className="bg-gray-200 rounded-lg overflow-hidden shadow-md">
                   <img
                     src={location.img}
-                    alt={location.locationName}
+                    alt={location.name}
                     className="w-full h-32 object-cover"
                   />
                   <div className="p-2">
                     <h3 className="text-md font-semibold text-gray-700">
-                      {location.locationName}
+                      {location.name}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {location.locationAddress}
+                      {location.address}
                     </p>
                   </div>
                 </div>

@@ -14,7 +14,12 @@ export enum EHotelStatus {
     REJECTED = "REJECTED",
 }
 
-export enum EItemtype{
-    FLIGHT = "FLIGHT",
-  HOTEL = "HOTEL",
+export enum EUserRoles {
+    ADMIN = "ADMIN",
+    USER = "USER",
+}
+
+export enum EMethodPayment {
+    CASH = "CASH",
+    BANKING = "BANKING",
 }

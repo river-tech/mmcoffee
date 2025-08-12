@@ -1,5 +1,4 @@
 "use client";
-import { IHotel, ILocation } from "@/app/types/index.d";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
@@ -10,14 +9,12 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
-
 
 const formSchema = z.object({
   room: z.number().nonnegative(),
@@ -45,7 +42,7 @@ const FilterForm = () => {
   });
   const [hoverRating, setHoverRating] = useState<number>(0);
   const pathname = usePathname();
-  console.log(pathname);
+  const displayAddBtn = pathname.includes("/result");
   function onSubmit(values: z.infer<typeof formSchema>) {
     const newSearchParams = new URLSearchParams(searchParams.toString());
     if (values.room !== 0) {
@@ -78,9 +75,21 @@ const FilterForm = () => {
     } else {
       newSearchParams.delete("budget");
     }
-
     router.push(`${pathname}?${newSearchParams.toString()}`);
   }
+
+  const handleResetFilter = () => {
+    form.reset({
+      room: 0,
+      bedType: {
+        single: false,
+        double: false,
+      },
+      rating: 0,
+    });
+    setBudget([100]);
+    router.push(`${pathname}`);
+  };
 
   return (
     <div className="w-[20%] bg-white h-fit py-2 px-2 rounded-lg flex flex-col justify-center ">
@@ -116,7 +125,6 @@ const FilterForm = () => {
                     {...field}
                     onChange={(e) => field.onChange(Number(e.target.value))}
                   />
-                 
                 </FormControl>
               </FormItem>
             )}
@@ -164,37 +172,52 @@ const FilterForm = () => {
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="rating"
-            render={({ field }) => (
-              <FormItem className="flex items-start gap-1 justify-start">
-                <p className="font-bold mt-1 ">Rating: </p>
-                <FormControl>
-                  <div className="flex pl-1 mb-10  space-x-1 size-4">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <div
-                        key={star}
-                        onMouseEnter={() => setHoverRating(star)}
-                        onMouseLeave={() => setHoverRating(0)}
-                        onClick={() => field.onChange(star)}
-                        className="cursor-pointer text-xl text-yellow-500 pl-2 "
-                      >
-                        {hoverRating >= star || Number(field.value) >= star ? (
-                          <AiFillStar />
-                        ) : (
-                          <AiOutlineStar />
-                        )}
+          <>
+            {!displayAddBtn && (
+              <FormField
+                control={form.control}
+                name="rating"
+                render={({ field }) => (
+                  <FormItem className="flex items-start gap-1 justify-start">
+                    <p className="font-bold mt-1 ">Rating: </p>
+                    <FormControl>
+                      <div className="flex pl-1 mb-10  space-x-1 size-4">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <div
+                            key={star}
+                            onMouseEnter={() => setHoverRating(star)}
+                            onMouseLeave={() => setHoverRating(0)}
+                            onClick={() => field.onChange(star)}
+                            className="cursor-pointer text-xl text-yellow-500 pl-2 "
+                          >
+                            {hoverRating >= star ||
+                            Number(field.value) >= star ? (
+                              <AiFillStar />
+                            ) : (
+                              <AiOutlineStar />
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </FormControl>
-              </FormItem>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             )}
-          />
-          <Button type="submit" className="text-right w-full bg-[#4b4846] hover:bg-[#322b2b]">
+          </>
+          <Button
+            type="submit"
+            className="text-right w-full bg-[#4b4846] hover:bg-[#322b2b]"
+          >
             Filter
           </Button>
+          <Button
+            onClick={() => handleResetFilter()}
+            className="text-right w-full bg-[#09777a] hover:bg-[#0d4e4f]"
+          >
+            Reset
+          </Button>
+          
         </form>
       </Form>
     </div>

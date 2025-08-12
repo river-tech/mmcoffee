@@ -1,10 +1,59 @@
-import { IHotel } from "./types";
-import { ERoomType } from "./types/enum";
+import { IHotel, IHotelBooking } from "./model/Hotel";
+import { IUser } from "./model/user";
+import { ERoomType, EUserRoles } from "./types/enum";
 
-export const Duser = {
-  avar: "https://i.pinimg.com/736x/64/f7/8d/64f78daedff642c605dc3bab2604e832.jpg",
-  name: "Nguyễn Hà",
+export const Duser : IUser = {
+  id: 1,
+  avt: "https://i.pinimg.com/736x/64/f7/8d/64f78daedff642c605dc3bab2604e832.jpg",
+  name: "Lâm Hà",
+  username: "john_doe",
+  email: "john.doe@example.com",
+  password: "hashed_password_123",
+  gender: true, 
+  phoneNumber: "0903536212",
+  birthday: new Date("1991-03-25"),
+  address: "123 Main St, City, Country",
+  NIDNumber: "123456789",
+  idToken: "token_12345",
+  cartId: [101],
+  ratings: [
+    { hotelId: 1, rating: 5, comment: "Excellent stay!" },
+    { hotelId: 2, rating: 4, comment: "Good experience" },
+  ],
+  chatFromUser: [1, 2, 3], 
+  chatToUser: [2, 3, 4],
+  hotels: [1, 2], 
+  roles: EUserRoles.ADMIN, 
+  status: true, 
 };
+
+export const DCart = [
+  {
+    id: 101,
+    userId : 1,
+    hotelBooking: 1,
+    quantity: 1,
+    price: 100,
+    amount: 100,
+    paymentMethod: "CASH",
+    paymentDate: new Date("2023-12-01"),
+    createdAt: new Date("2023-12-01"),
+    paymentStatus: false,
+  },
+  {
+    id: 102,
+    userId : 1,
+    hotelBooking: 2,
+    quantity: 2,
+    price: 200,
+    amount: 400,
+    paymentMethod: "CASH",
+    paymentDate: new Date("2023-12-02"),
+    createdAt: new Date("2023-12-02"),
+    paymentStatus: false,
+  },
+];
+
 
 export const DreviewItems = [
   {
@@ -93,71 +142,56 @@ export const DreviewItems = [
   },
 ];
 
-const FeaturedHotels = [
-  {
-    id: 1,
-    name: "Hotel Sunshine",
-    description: "Enjoy a sunny stay with excellent amenities.",
-    price: "$120/night",
-    imageUrl:
-      "https://i.pinimg.com/736x/70/9a/a6/709aa615268c9ebd7940c9a14e2c1e47.jpg",
-    location: "Đà Nẵng, Việt Nam",
-  },
-  {
-    id: 2,
-    name: "Mountain View Resort",
-    description: "Experience serene mountain views and fresh air.",
-    price: "$150/night",
-    imageUrl:
-      "https://i.pinimg.com/736x/70/9a/a6/709aa615268c9ebd7940c9a14e2c1e47.jpg",
-    location: "Đà Lạt, Việt Nam",
-  },
-  {
-    id: 3,
-    name: "Sea Breeze Hotel",
-    description: "Relax by the sea with our top-notch services.",
-    price: "$180/night",
-    imageUrl:
-      "https://i.pinimg.com/736x/70/9a/a6/709aa615268c9ebd7940c9a14e2c1e47.jpg",
-    location: "Nha Trang, Việt Nam",
-  },
-];
 
 export const DLocation = [
   {
-    locationName: "Hội An",
-    locationAddress: "Quảng Nam, Việt Nam",
-    img: "https://i.pinimg.com/474x/93/f5/79/93f579a38abdce145585ce5aef0160fd.jpg",
+    name: "Hội An",
+    address: "Quảng Nam, Việt Nam",
   },
   {
-    locationName: "Đà Nẵng",
-    locationAddress: "Việt Nam",
-    img: "https://i.pinimg.com/236x/69/ed/1a/69ed1ab7eea1b75a04105f4de8a145e9.jpg",
+    name: "Đà Nẵng",
+    address: "Việt Nam",
   },
   {
-    locationName: "Huế",
-    locationAddress: "Thừa Thiên Huế, Việt Nam",
-    img: "https://i.pinimg.com/236x/45/03/2e/45032e4dede478dd302753bf1f305638.jpg",
+    name: "Huế",
+    address: "Thừa Thiên Huế, Việt Nam",
   },
   {
-    locationName: "Nha Trang",
-    locationAddress: "Khánh Hòa, Việt Nam",
-    img: "https://i.pinimg.com/236x/60/d0/f3/60d0f31bd03546c7cf54075eb7be646b.jpg",
+    name: "Nha Trang",
+    address: "Khánh Hòa, Việt Nam",
   },
   {
-    locationName: "Đà Lạt",
-    locationAddress: "Lâm Đồng, Việt Nam",
-    img: "https://i.pinimg.com/236x/78/29/a8/7829a8d8967bf8408875f3d40e4aa5ee.jpg",
+    name: "Đà Lạt",
+    address: "Lâm Đồng, Việt Nam",
   },
   {
-    locationName: "TP. Hồ Chí Minh",
-    locationAddress: "Việt Nam",
-    img: "https://i.pinimg.com/236x/47/ab/81/47ab8134011b1ce2bc3727aa07671bc6.jpg",
+    name: "TP. Hồ Chí Minh",
+    address: "Việt Nam",
   },
   {
-    locationName: "Hà Nội",
-    locationAddress: "Việt Nam",
-    img: "https://i.pinimg.com/236x/87/9a/a0/879aa0d98eab8913cdab628e0ba35be7.jpg",
+    name: "Hà Nội",
+    address: "Việt Nam",
+  },
+];
+
+export const hotelBookings: IHotelBooking[] = [
+  {
+    id: 1,
+    user: { id: 101, name: "Nguyễn Văn A" },
+    hotel: { id: 11, name: "Khách sạn Hội An Boutique" },
+    checkInDate: new Date("2025-02-01"),
+    checkOutDate: new Date("2025-02-05"),
+    status: true,
+    hotelBookingRooms: [{ id: 1 }],
+  },
+  {
+    id: 2,
+    user: { id: 102, name: "Trần Thị B" },
+    hotel: { id: 12, name: "Khách sạn Minh Quang" },
+    checkInDate: new Date("2025-02-10"),
+    checkOutDate: new Date("2025-02-12"),
+    status: true,
+    hotelBookingRooms: [{ id: 2 }],
   },
 ];
 
@@ -165,11 +199,9 @@ export const DHotel: IHotel[] = [
   {
     id: 11,
     name: "Khách sạn Hội An Boutique",
-    description:
-      "Khách sạn boutique sang trọng với kiến trúc truyền thống và dịch vụ cao cấp.",
+    description: "Khách sạn boutique sang trọng với kiến trúc truyền thống và dịch vụ cao cấp.",
     price: 200.0,
-    imageUrl:
-      "https://i.pinimg.com/236x/57/89/44/578944fec96bc11d738bb187b74fb8c3.jpg",
+    imageUrl: "https://i.pinimg.com/236x/57/89/44/578944fec96bc11d738bb187b74fb8c3.jpg",
     location: "Hội An",
     address: "Số 10 Trần Phú, Phường Minh An, Hội An",
     rating: 3.7,
@@ -184,6 +216,20 @@ export const DHotel: IHotel[] = [
         status: true,
         singleBed: 1,
         doubleBed: 1,
+        hotelBookingRooms: [
+          {
+            id: 1,
+            numRoom: 1,
+            pricePerRoom: 100,
+            hotelBooking: {
+              id: 101,
+              checkInDate: new Date("2025-02-01"),
+              checkOutDate: new Date("2025-02-05"),
+              customerName: "Nguyễn Văn A",
+              customerEmail: "nguyenvana@example.com",
+            },
+          },
+        ],
       },
       {
         id: 2,
@@ -195,147 +241,144 @@ export const DHotel: IHotel[] = [
         status: true,
         singleBed: 1,
         doubleBed: 2,
+        hotelBookingRooms: [
+          {
+            id: 2,
+            numRoom: 1,
+            pricePerRoom: 120,
+            hotelBooking: {
+              id: 102,
+              checkInDate: new Date("2025-02-10"),
+              checkOutDate: new Date("2025-02-12"),
+              customerName: "Trần Thị B",
+              customerEmail: "tranthib@example.com",
+            },
+          },
+        ],
       },
       {
         id: 3,
         numberRoom: 103,
-        roomType: ERoomType.STANDARD,
+        roomType: ERoomType.DELUXE,
         price: 150,
-        maxOccupancy: 4,
-        quantityRoom: 3,
+        maxOccupancy: 2,
+        quantityRoom: 4,
         status: true,
         singleBed: 2,
-        doubleBed: 1,
+        doubleBed: 0,
+        hotelBookingRooms: [
+          {
+            id: 3,
+            numRoom: 1,
+            pricePerRoom: 150,
+            hotelBooking: {
+              id: 103,
+              checkInDate: new Date("2025-02-15"),
+              checkOutDate: new Date("2025-02-20"),
+              customerName: "Nguyễn Thị C",
+              customerEmail: "nguyenthic@example.com",
+            },
+          },
+        ],
       },
       {
         id: 4,
         numberRoom: 104,
         roomType: ERoomType.DELUXE,
-        price: 80,
-        maxOccupancy: 2,
-        quantityRoom: 4,
-        status: false,
-        singleBed: 1,
-        doubleBed: 4,
-      },
-      {
-        id: 5,
-        numberRoom: 105,
-        roomType: ERoomType.DELUXE,
-        price: 200,
-        maxOccupancy: 5,
-        quantityRoom: 2,
+        price: 180,
+        maxOccupancy: 4,
+        quantityRoom: 3,
         status: true,
         singleBed: 2,
-        doubleBed: 3,
+        doubleBed: 1,
+        hotelBookingRooms: [
+          {
+            id: 4,
+            numRoom: 1,
+            pricePerRoom: 180,
+            hotelBooking: {
+              id: 104,
+              checkInDate: new Date("2025-02-20"),
+              checkOutDate: new Date("2025-02-25"),
+              customerName: "Lê Minh D",
+              customerEmail: "leminhd@example.com",
+            },
+          },
+        ],
       },
     ],
   },
   {
     id: 12,
     name: "Khách sạn Minh Quang",
-    description:
-      "Nằm gần phố cổ, cung cấp phòng nghỉ tiện nghi và view sông Hoài tuyệt đẹp.",
+    description: "Nằm gần phố cổ, cung cấp phòng nghỉ tiện nghi và view sông Hoài tuyệt đẹp.",
     price: 150.0,
     imageUrl: "https://example.com/images/minhquang.jpg",
     location: "Hội An",
     address: "Số 25 Nguyễn Thái Học, Phường Minh An, Hội An",
     rating: 2.8,
+    roomList: [
+      {
+        id: 5,
+        numberRoom: 105,
+        roomType: ERoomType.STANDARD,
+        price: 110,
+        maxOccupancy: 2,
+        quantityRoom: 4,
+        status: true,
+        singleBed: 1,
+        doubleBed: 1,
+        hotelBookingRooms: [
+          {
+            id: 5,
+            numRoom: 1,
+            pricePerRoom: 110,
+            hotelBooking: {
+              id: 105,
+              checkInDate: new Date("2025-02-10"),
+              checkOutDate: new Date("2025-02-12"),
+              customerName: "Vũ Minh E",
+              customerEmail: "vuminhe@example.com",
+            },
+          },
+        ],
+      },
+      {
+        id: 6,
+        numberRoom: 106,
+        roomType: ERoomType.DELUXE,
+        price: 140,
+        maxOccupancy: 3,
+        quantityRoom: 3,
+        status: true,
+        singleBed: 1,
+        doubleBed: 2,
+        hotelBookingRooms: [
+          {
+            id: 6,
+            numRoom: 1,
+            pricePerRoom: 140,
+            hotelBooking: {
+              id: 106,
+              checkInDate: new Date("2025-02-15"),
+              checkOutDate: new Date("2025-02-17"),
+              customerName: "Đỗ Thị F",
+              customerEmail: "dothif@example.com",
+            },
+          },
+        ],
+      },
+    ],
   },
-  {
-    id: 13,
-    name: "Resort Đại Lộc",
-    description:
-      "Resort nghỉ dưỡng với bể bơi ngoài trời và khu vườn xanh mát.",
-    price: 180.0,
-    imageUrl: "https://example.com/images/dailoc_resort.jpg",
-    location: "Hội An",
-    address: "Khu Hà My, Phường Điện Dương, Hội An",
-    rating: 4.5,
-  },
-  {
-    id: 14,
-    name: "Khách sạn An Bình",
-    description:
-      "Không gian yên tĩnh, thích hợp cho gia đình và du khách tìm kiếm sự thư giãn.",
-    price: 170.0,
-    imageUrl: "https://example.com/images/anbinh.jpg",
-    location: "Hội An",
-    address: "Số 36 Trần Cao Vân, Phường Cẩm Phô, Hội An",
-    rating: 2.0,
-  },
-  {
-    id: 15,
-    name: "Khách sạn Lãng Yên",
-    description:
-      "Thiết kế hiện đại kết hợp nét truyền thống, cung cấp nhiều tiện ích cho khách hàng.",
-    price: 220.0,
-    imageUrl: "https://example.com/images/langyen.jpg",
-    location: "Hội An",
-    address: "Số 58 Lý Thường Kiệt, Phường Sơn Phong, Hội An",
-    rating: 3.2,
-  },
-  {
-    id: 16,
-    name: "Khách sạn Thủy Vân",
-    description:
-      "View biển tuyệt đẹp, dịch vụ chuyên nghiệp và phòng nghỉ tiện nghi.",
-    price: 250.0,
-    imageUrl: "https://example.com/images/thuyvan.jpg",
-    location: "Hội An",
-    address: "Biển Cửa Đại, Phường Cẩm An, Hội An",
-    rating: 4.9,
-  },
-  {
-    id: 17,
-    name: "Khách sạn Hoa Hồng",
-    description:
-      "Không gian lãng mạn, phù hợp cho các cặp đôi và kỳ nghỉ cuối tuần.",
-    price: 190.0,
-    imageUrl: "https://example.com/images/hoahong.jpg",
-    location: "Hội An",
-    address: "Số 22 Hoàng Diệu, Phường Sơn Phong, Hội An",
-    rating: 3.0,
-  },
-  {
-    id: 18,
-    name: "Khách sạn Bình Minh",
-    description:
-      "Khách sạn hiện đại với nhiều tiện ích như gym, spa và nhà hàng.",
-    price: 210.0,
-    imageUrl: "https://example.com/images/binhminh.jpg",
-    location: "Hội An",
-    address: "Số 77 Phan Chu Trinh, Phường Minh An, Hội An",
-    rating: 1.8,
-  },
-  {
-    id: 19,
-    name: "Khách sạn Phương Đông",
-    description: "Kết hợp giữa phong cách phương Đông và tiện nghi hiện đại.",
-    price: 230.0,
-    imageUrl: "https://example.com/images/phuongdong.jpg",
-    location: "Hội An",
-    address: "Số 6 Bà Triệu, Phường Cẩm Phô, Hội An",
-    rating: 4.1,
-  },
-  {
-    id: 20,
-    name: "Khách sạn Thiên Nhiên",
-    description:
-      "Nằm giữa thiên nhiên, cung cấp các hoạt động ngoài trời và nghỉ dưỡng.",
-    price: 240.0,
-    imageUrl: "https://example.com/images/thiennhien.jpg",
-    location: "Hội An",
-    address: "Số 50 Nguyễn Duy Hiệu, Phường Cẩm Châu, Hội An",
-    rating: 2.9,
-  },
+  // Thêm nhiều khách sạn và phòng khác nếu cần
 ];
+
 
 export const DRoom = [
   {
     id: 1,
     numberRoom: 101,
-    roomType: "STANDARD",
+    roomType: ERoomType.STANDARD,
     price: 100,
     maxOccupancy: 2,
     quantityRoom: 5,
@@ -349,7 +392,7 @@ export const DRoom = [
   {
     id: 2,
     numberRoom: 102,
-    roomType: "STANDARD",
+    roomType: ERoomType.STANDARD,
     price: 120,
     maxOccupancy: 3,
     quantityRoom: 2,
@@ -363,7 +406,7 @@ export const DRoom = [
   {
     id: 3,
     numberRoom: 103,
-    roomType: "STANDARD",
+    roomType: ERoomType.STANDARD,
     price: 150,
     maxOccupancy: 4,
     quantityRoom: 3,
@@ -377,7 +420,7 @@ export const DRoom = [
   {
     id: 4,
     numberRoom: 104,
-    roomType: "DELUXE",
+    roomType: ERoomType.DELUXE,
     price: 80,
     maxOccupancy: 2,
     quantityRoom: 4,
@@ -391,7 +434,7 @@ export const DRoom = [
   {
     id: 5,
     numberRoom: 105,
-    roomType: "DELUXE",
+    roomType: ERoomType.DELUXE,
     price: 200,
     maxOccupancy: 5,
     quantityRoom: 2,

@@ -14,24 +14,20 @@ import { FaKey, FaLock, FaMessage, FaPersonRifle } from "react-icons/fa6";
 import { CgProfile } from "react-icons/cg";
 import { FaSignOutAlt } from "react-icons/fa";
 import Sidebar from "./Sidebar";
-import Cookies from "js-cookie";
-import { revalidatePath } from "next/cache";
+import Cookies from "js-cookie";  
 import { toast } from "react-toastify";
 import { FiMessageCircle } from "react-icons/fi";
 import { LuShoppingBag } from "react-icons/lu";
 
 const Navigation = [
-  { name: "Home", link: "/" },
   { name: "Stays", link: "/stays" },
-  { name: "Flights", link: "/flights" },
-  { name: "Helps", link: "/helps" },
-  { name: "Booking history", link: "/orders" },
+  { name: "Home", link: "/" },
   { name: "Be a host", link: "/business" },
 ];
 
 const user = {
   avar: "https://i.pinimg.com/236x/50/d4/29/50d429ea5c9afe0ef9cb3c96f784bea4.jpg",
-  name: "Nguyễn Hà",
+  name: "Lâm Hà",
 };
 
 const Navbar = ({ email }: { email: string }) => {
@@ -128,12 +124,11 @@ const Navbar = ({ email }: { email: string }) => {
                       </ul>
                     </HoverCardContent>
                   </HoverCard>
-
-                  <Link href="notification">
-                    <LuShoppingBag className="text-2xl text-gray-800 " />
+                  <Link href="/cart">
+                    <LuShoppingBag className="text-2xl text-gray-800 hover:text-[#6d2727] duration-200 " />
                   </Link>
                   <Link href="/message">
-                    <FiMessageCircle className="text-2xl text-gray-800 " />
+                    <FiMessageCircle className="text-2xl text-gray-800 hover:text-[#5e2323] duration-200 " />
                   </Link>
                 </div>
               )}
@@ -144,9 +139,9 @@ const Navbar = ({ email }: { email: string }) => {
           <div className="flex items-center justify-center gap-10 border-gray-200 py-3 bg-[#afaeae]">
             {Navigation.map((nav, index) => (
               <React.Fragment key={index}>
-                { pathname.includes(nav.link) && nav.link!="/" ? (
+                {(pathname === nav.link || (pathname === "/" && nav.link === "/"))   ? (
                   <Link
-                    className="uppercase font-medium text-[#731f1f] transition duration-300"
+                    className="uppercase font-medium text-[#731f1f] transition duration-300 border-b-2 border-[#6b5f5f]"
                     href={nav.link}
                   >
                     {nav.name}

@@ -1,5 +1,4 @@
 "use client";
-import { IHotel, ILocation } from "@/app/types/index.d";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 import { z } from "zod";
@@ -8,6 +7,10 @@ import { Input } from "@/components/ui/input";
 import RenderStar from "@/components/renderStar";
 import FilterForm from "@/component/FilterForm";
 import SortForm from "@/component/SortForm";
+import { IRoom } from "@/app/model/Room";
+import { ILocation } from "@/app/model/location";
+import { IHotel } from "@/app/model/Hotel";
+import { isExistRoom } from "@/app/actions/commonFunction";
 
 const StayResult = ({
   location,
@@ -27,10 +30,27 @@ const StayResult = ({
   const doubleBedParams = seachparams.get("double");
   const ratingParams = seachparams.get("rating");
 
-
-  const [renderHotel, setRenderHotel] = useState<IHotel[]>(hotel);
+  const [renderHotel, setRenderHotel] = useState<IHotel[]>([]);
+  const [inscreasePrice, setInscreasePrice] = useState<Boolean>(false);
+  const [inscreaseRating, setInscreaseRating] = useState<Boolean>(false);
+  const [nameHotel, setNameHotel] = useState<string>("");
+  const removeAccents = (str: string) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+  };
   useEffect(() => {
     let filteredHotels = [...hotel];
+
+    if (nameHotel !== "") {
+      filteredHotels = filteredHotels.filter((item) =>
+        removeAccents(item.name).toLowerCase().includes(nameHotel.toLowerCase())
+      );
+    } else {
+      filteredHotels = hotel;
+    }
 
     if (locationParams) {
       filteredHotels = filteredHotels.filter(
@@ -41,103 +61,93 @@ const StayResult = ({
     if (budgetParams) {
       const budgetNumber = Number(budgetParams);
       filteredHotels = filteredHotels.filter(
-        (item) => item.price <= budgetNumber
+        (item) => item.price !== undefined && item.price <= budgetNumber
       );
     }
 
     if (roomParams) {
       const roomNumber = Number(roomParams);
+      // alert(roomNumber);
       filteredHotels = filteredHotels.filter((item) =>
-        item.roomList?.filter(
-          (room) =>
-            room?.quantityRoom !== undefined && room.quantityRoom === roomNumber
-        )
+        item.roomList?.some((room: IRoom) => room?.maxOccupancy === roomNumber)
       );
     }
+
     if (singleBedParams && !doubleBedParams) {
       filteredHotels = filteredHotels.filter((item) =>
-        item.roomList?.filter(
-          (room) => room?.singleBed !== 0 && room.doubleBed === 0
+        item.roomList?.some(
+          (room: IRoom) => room?.singleBed !== 0 && room.doubleBed === 0
         )
       );
     }
 
     if (!singleBedParams && doubleBedParams) {
       filteredHotels = filteredHotels.filter((item) =>
-        item.roomList?.filter(
-          (room) => room?.doubleBed !== 0 && room.singleBed === 0
+        item.roomList?.some(
+          (room: IRoom) => room?.doubleBed !== 0 && room.singleBed === 0
         )
       );
     }
 
     if (singleBedParams && doubleBedParams) {
       filteredHotels = filteredHotels.filter((item) =>
-        item.roomList?.filter(
-          (room) => room?.singleBed !== 0 && room?.doubleBed !== 0
+        item.roomList?.some(
+          (room: IRoom) => room?.singleBed !== 0 && room?.doubleBed !== 0
         )
       );
     }
 
     if (ratingParams) {
       const ratingNumber = Number(ratingParams);
-      filteredHotels = filteredHotels.filter(
-        (item) => (item.rating ?? 0) >= ratingNumber
+      filteredHotels = filteredHotels.filter((item) => {
+        return (
+          item.rating !== undefined &&
+          Math.round(item.rating)  == ratingNumber
+        );
+      });
+    }
+
+    // Kiểm tra nameHotel trước khi lọc theo tên
+    if (inscreasePrice) {
+      filteredHotels = filteredHotels.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+    } else {
+      filteredHotels = filteredHotels.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+    }
+
+    if (inscreaseRating) {
+      filteredHotels = filteredHotels.sort(
+        (a, b) => (a.rating ?? 0) - (b.rating ?? 0)
+      );
+    } else {
+      filteredHotels = filteredHotels.sort(
+        (a, b) => (b.rating ?? 0) - (a.rating ?? 0)
       );
     }
 
+    filteredHotels = filteredHotels.filter((item) =>
+      isExistRoom(
+        item,
+        new Date(checkInParams || ""),
+        new Date(checkOutParams || "")
+      )
+    );
+
     setRenderHotel(filteredHotels);
   }, [
+    hotel,
     locationParams,
     budgetParams,
     roomParams,
     singleBedParams,
     doubleBedParams,
     ratingParams,
+    checkInParams,
+    checkOutParams,
+    nameHotel,
+    inscreasePrice,
+    inscreaseRating,
   ]);
 
-  // console.log(renderHotel[0]);
-  const [inscreasePrice, setInscreasePrice] = useState<Boolean>(false);
-  const [inscreaseRating, setInscreaseRating] = useState<Boolean>(false);
-  const [nameHotel, setNameHotel] = useState<string>("");
-  useEffect(() => {
-    if (inscreasePrice) {
-      setRenderHotel([...renderHotel].sort((a, b) => a.price - b.price));
-    } else {
-      setRenderHotel([...renderHotel].sort((a, b) => b.price - a.price));
-    }
-  }, [inscreasePrice]);
-  useEffect(() => {
-    if (inscreaseRating) {
-      setRenderHotel(
-        [...renderHotel].sort((a, b) => (a.rating ?? 0) - (b.rating ?? 0))
-      );
-    } else {
-      setRenderHotel(
-        [...renderHotel].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
-      );
-    }
-  }, [inscreaseRating]);
-  useEffect(() => {
-    if (nameHotel) {
-      setRenderHotel(
-        [...hotel].filter((item) =>
-          removeAccents(item.name)
-            .toLowerCase()
-            .includes(nameHotel.toLowerCase())
-        )
-      );
-    } else {
-      setRenderHotel(hotel);
-    }
-  }, [nameHotel]);
-
-  const removeAccents = (str: string) => {
-    return str
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/đ/g, "d")
-      .replace(/Đ/g, "D");
-  };
   return (
     <div>
       <SortForm className="top-[20%] h-25 pt-5 pb-5" Location={location} />
@@ -195,17 +205,16 @@ const StayResult = ({
               <div
                 key={item.id}
                 className="
-            bg-[#a7a3a0] text-white cursor-pointer rounded-xl  shadow-lg p-6 transition  transform hover:scale-[1.02] hover:shadow-xl"
-                // onClick={() => router.push(`/stays/search/result/${item.id}`)}
+      bg-[#a7a3a0] text-white cursor-pointer rounded-xl shadow-lg p-6 transition transform hover:scale-[1.02] hover:shadow-xl"
                 onClick={() =>
                   router.push(
-                    `/stays/search/result/${item.id}?location=${encodeURIComponent(
+                    `/stays/search/result/${
+                      item.id
+                    }?location=${encodeURIComponent(
                       locationParams || ""
                     )}&check_in=${encodeURIComponent(
                       checkInParams || ""
-                    )}&check_out=${encodeURIComponent(
-                      checkOutParams || ""
-                    )}`
+                    )}&check_out=${encodeURIComponent(checkOutParams || "")}`
                   )
                 }
               >
@@ -213,7 +222,7 @@ const StayResult = ({
                   <img
                     src={item.imageUrl}
                     alt={item.name}
-                    className=" object-cover rounded-lg"
+                    className="object-cover rounded-lg"
                   />
                 </div>
                 <div>

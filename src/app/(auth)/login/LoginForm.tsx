@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import Cookies from "js-cookie";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -22,8 +23,9 @@ const formSchema = z.object({
 
 import React from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
-import { createSession } from "@/lib/session";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+
 
 const LoginForm = () => {
     const router= useRouter();
@@ -35,8 +37,26 @@ const LoginForm = () => {
     },
   });
    function onSubmit(values: z.infer<typeof formSchema>) {
-      console.log(values);
+    try {
+      const session = {
+        userId: "123",
+        email: values.email,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),  
+      };
+
+      Cookies.set("session", JSON.stringify(session), {
+        expires: 7,
+        secure: true,
+        sameSite: "lax",
+      });
+
+      toast.success("Bạn vừa đăng nhập thành công");
       router.push("/");
+    } catch (error) {
+      console.error("Đăng nhập thất bại:", error);
+    } finally {
+      router.refresh();
+    }
   }
 
   return (
